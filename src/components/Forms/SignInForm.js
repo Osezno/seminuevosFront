@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStyles } from './Form.styles';
-import { checkEmail, checkPasswordLogin } from './validations';
+import { checkLength, checkNumber, resizeImage } from './validations';
 import catalogs from '../../constants/catalogs';
 import api from '../../constants/api';
 import axios from 'axios';
@@ -18,14 +18,13 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 //import * as ACTIONS from '../../store/actions';
-const { errors,vertical, horizontal, inputStr } = catalogs
+const { errors, vertical, horizontal, inputStr } = catalogs
 
 
 
 const SignInForm = (props) => {
-    const {addAuthUser} = props
+    const { returnImage } = props
     const classes = useStyles();
-   
     const [error, setError] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     //snackbar
@@ -33,37 +32,41 @@ const SignInForm = (props) => {
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState({});
     const [loading, setLoading] = useState(false);
-    
-    
+
+
 
     const [formData, setFormData] = useState({
-        email: undefined,
-        password: undefined,
-        showPassword: false
+        precio: undefined,
+        descripcion: undefined,
     });
 
-    const { email, password, showPassword } = formData;
+    const { precio, descripcion } = formData;
 
     //GENERAL FUNCTIONS
-    const handleClickShowPassword = () => {
-        setFormData({ ...formData, showPassword: !formData.showPassword });
-    };
-
+    const arrayBufferToBase64 =(buffer)=> {
+        var binary = '';
+        var bytes = new Uint8Array(buffer);
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
     const validate = (data) => {
-        const { password, email } = data;
-        if (!email || !password) {
+        const { precio, descripcion } = data;
+        if (!precio || !descripcion) {
             setError(true)
             setErrorMessage(errors.default)
             return false
         }
-        if (checkPasswordLogin(password)) {
+        if (checkNumber(precio, 1, 7)) {
             setError(true)
-            setErrorMessage(errors.passwordReq)
+            setErrorMessage(errors.precio)
             return false
         }
-        if (checkEmail(email)) {
+        if (checkLength(descripcion, 10, 200)) {
             setError(true)
-            setErrorMessage(errors.mail)
+            setErrorMessage(errors.descripcion)
             return false
         }
 
@@ -83,24 +86,51 @@ const SignInForm = (props) => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     };
 
-    const handleSignIn = (event) => {
+    const handleUploadCar = (event) => {
         event.preventDefault();
         setLoading(true)
-       
-        axios.post(api.signIn, {
-            headers: api.headerConfig,
+
+        axios.post(api.upload, {
             ...formData
         }).then((res) => {
-            setToastMessage(res.data.message)
-            if(res.data.success){
-                addAuthUser(res.data.data)
-                // add authUser to redux session
+
+            if (res.data && res.data.success) {
+                console.log( res.data.data)
+                returnImage(res.data.data)
+                setToastMessage("Tu carro fue publicado")
                 setToastType(classes.success)
+
+                // const reader = new FileReader()
+                // reader.readAsDataURL(res.data);
+                // reader.onload = (e) => {
+                //     console.log(e)
+                //     returnImage(e.target.result)
+                //     // resizeImage(e.target.result, 100, 100).then((compressImage) => {
+                //     //     setPreviewImg(compressImage)
+                //     // });
+                // };
+                // resizeImage(res.data, 500, 500).then((compressImage) => {
+                //     returnImage(compressImage)
+                // })
+            } else {
+                console.log("error")
+                setToastType(classes.error)
+                setToastMessage(res.data)
+
             }
-            else setToastType(classes.error)
             setOpen(true)
             setLoading(false)
+            // setToastMessage(res.data.message)
+            // if(res.data.success){
+            //     console.log(res.data.data)
+            //     // add authUser to redux session
+            //     setToastType(classes.success)
+            // }
+            // else setToastType(classes.error)
+            // setOpen(true)
+            // setLoading(false)
         }).catch(err => {
+            console.log(err)
             setToastMessage(errors.serverError)
             setToastType(classes.error)
             setOpen(true)
@@ -110,42 +140,30 @@ const SignInForm = (props) => {
 
 
     useEffect(() => {
-        if (typeof email !== 'undefined') validate(formData)
-    }, [formData, email])
+        validate(formData)
+    }, [formData])
 
 
     return (
 
-        <form onSubmit={handleSignIn} className={classes.form}>
+        <form onSubmit={handleUploadCar} className={classes.form}>
             <TextField
                 className={classes.inputs}
-                label={inputStr.email}
-                type="email"
+                label={"Precio"}
+                type="text"
                 size="small"
-                name="email"
-                value={email || ''}
+                name="precio"
+                value={precio || ''}
                 onChange={handleChange}
                 focus="true"
             />
             <TextField
                 className={classes.inputs}
-                type={showPassword ? 'text' : 'password'}
-                label={inputStr.password}
-                name="password"
-                value={password || ''}
+                type={'text'}
+                label={"Descripción"}
+                name="descripcion"
+                value={descripcion}
                 onChange={handleChange}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="Mostrar/Ocultar contraseña"
-                                onClick={() => { handleClickShowPassword() }}
-                            >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    )
-                }}
             />
             {error && <Typography variant="subtitle2" color="error">{errorMessage}</Typography>}
             <Button
@@ -156,7 +174,7 @@ const SignInForm = (props) => {
                 disabled={error || loading}
                 style={{ textTransform: 'none', marginTop: 10 }}
             >
-                {loading ? inputStr.load : inputStr.login}
+                {loading ? "Publicando" : "Subir carro"}
             </Button>
             <Snackbar
                 anchorOrigin={{ vertical, horizontal }}

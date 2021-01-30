@@ -1,29 +1,17 @@
 const pageInfo = {
   logo: "img/logo.png",
-  cover: "img/cover.jpg",
+  cover: "img/home_background.jpg",
   icon: "img/icon.png",
   nombre: "<project>",
-  welcomeMessage: "<welcome-message>",
+  welcomeMessage: "¡Ingresa tu información!",
   slogan: "Lorem Ipsum dolor amet",
   footerMessage: "© 2020 appName.",
 }
 
 const errors = {
   default: "Faltan datos",
-  mail: "El email no es valido",
-  mailUnavalible: "El email ya existe en nuestra base de datos",
-  password: "El password es incorrecto",
-  passwordReq: "El password no es seguro",
-  passwordEq: "El password no es igual",
-  name: "Nombre incorrecto",
-  invalidName: "El nombre no es valido",
-  invalidNumber:"El numero no es valido",
-  //for login password?
-  noUser: "El usuario no existe en el sistema",
-  session: "Sesión invalida",
-  denied: "Permisos insuficientes",
-  estatus: "Tu cuenta esta desabilitada",
-  recovery: "Tu token expiro o es incorrecto",
+  precio: "El precio no es valido",
+  descripcion: "La descripción no es valida",
   serverError: "Estamos experimentando problemas, nuestros tecnicos estan trabajando para resolverlos."
 }
 

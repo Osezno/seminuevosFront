@@ -1,71 +1,41 @@
-import React from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
+import React, { useState, useEffect } from 'react';
+
 import { useStyles } from './Account.styles';
 import catalogs from '../../constants/catalogs';
-import * as ROUTES from '../../constants/routes';
-import colors from '../../constants/colors';
-import Text from '../../components/Text/Text'
-import * as ACTIONS from '../../store/actions';
-import { Card, Link } from '@material-ui/core'
+
+
+import { Card,  } from '@material-ui/core'
 //componentes
 import Info from './accountComponents/Info';
 import View from './accountComponents/View';
 import SignInForm from '../../components/Forms/SignInForm';
 
 const SignIn = (props) => {
-    const { signIn} = props
+    
     const { pageInfo } = catalogs
     const classes = useStyles();
-
-    const addAuthUser = (session) => {
-        signIn(session)
-    }
+    const [image, setImage] = useState('');
+     const returnImage = (img)=>{
+       // console.log(img)
+       
+        setImage(img)
+     }
+    
 
     return (
         <>
             <Card className={classes.signInRoot}>
-                <View className={classes.cover} cover={pageInfo.cover} />
+                <View className={classes.cover} cover={image != '' ? image : pageInfo.cover} />
                 <div className={classes.content}>
-                    <Info title={"lorem Ipsum"} highlight={"dolor amet"} message={pageInfo.welcomeMessage} />
-                    <SignInForm addAuthUser={(session) => addAuthUser(session)} />
-                    <div className={classes.linkContainer}>
-                        <Text color={colors.dark} type="small">
-                            ¿Olvidaste tu contraseña?&nbsp;
-                        </Text>
-                        <Link
-
-                            variant="subtitle2"
-                            color="primary"
-                            component={RouterLink}
-                            to={ROUTES.PASSWORD_FORGET}
-                        >
-
-                            <Text color={colors.primary} type="small">
-                                Recuperar mi contraseña
-                            </Text>
-                        </Link>
-                    </div>
+                    <Info title={"BIENVENIDO A"} highlight={"SEMINUEVOS"} message={pageInfo.welcomeMessage} />
+                    <SignInForm returnImage={(img)=> returnImage(img)}  />
+                    
                 </div>
             </Card>
         </>
     )
 }
 
-const mapStateToProps = state => {
-    return {
-      
-    }
-}
 
-const mapDispatchToProps = dispatch => {
-    return {
-        signIn: (session) => dispatch(ACTIONS.signIn(session))
-    }
-}
 
-export default compose(
-    withRouter,
-    connect(mapStateToProps, mapDispatchToProps)
-)(SignIn);
+export default SignIn ;
