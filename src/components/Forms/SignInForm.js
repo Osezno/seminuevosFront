@@ -95,23 +95,11 @@ const SignInForm = (props) => {
         }).then((res) => {
 
             if (res.data && res.data.success) {
-                console.log( res.data.data)
+            
                 returnImage(res.data.data)
                 setToastMessage("Tu carro fue publicado")
                 setToastType(classes.success)
 
-                // const reader = new FileReader()
-                // reader.readAsDataURL(res.data);
-                // reader.onload = (e) => {
-                //     console.log(e)
-                //     returnImage(e.target.result)
-                //     // resizeImage(e.target.result, 100, 100).then((compressImage) => {
-                //     //     setPreviewImg(compressImage)
-                //     // });
-                // };
-                // resizeImage(res.data, 500, 500).then((compressImage) => {
-                //     returnImage(compressImage)
-                // })
             } else {
                 console.log("error")
                 setToastType(classes.error)
@@ -120,15 +108,7 @@ const SignInForm = (props) => {
             }
             setOpen(true)
             setLoading(false)
-            // setToastMessage(res.data.message)
-            // if(res.data.success){
-            //     console.log(res.data.data)
-            //     // add authUser to redux session
-            //     setToastType(classes.success)
-            // }
-            // else setToastType(classes.error)
-            // setOpen(true)
-            // setLoading(false)
+     
         }).catch(err => {
             console.log(err)
             setToastMessage(errors.serverError)
